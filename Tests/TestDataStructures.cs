@@ -16,6 +16,11 @@ namespace Tests
         private const string __trainingHashTableUrl = "https://courses.prometheus.org.ua/assets/courseware/v1/27c835a0773734f92be78abe1ad71f53/c4x/KPI/Algorithms101/asset/test_06.txt.zip";
         private const string __testHashTableUrl = "https://courses.prometheus.org.ua/assets/courseware/v1/28bb9c000ac784b2e3dd7b7672549e23/c4x/KPI/Algorithms101/asset/input_06.txt.zip";
 
+        private const string __bstZippedSamples = "https://courses.prometheus.org.ua/assets/courseware/v1/237ba9bb595be101117762d63e4e1614/c4x/KPI/Algorithms101/asset/data_examples_07.zip";
+        private const string __bstBigSampleEndPoint = "assets/courseware/v1/2b7ac6054236d173fc556de9f817c494/c4x/KPI/Algorithms101/asset/input_1000a.txt";
+
+        public static Dictionary<int, (int[], List<int>[])> BstZippedSamplesCollection => new BstData(source: __bstZippedSamples).Collection;
+
         [Test(Author = "Me", Description = "Test for heaps algorithms"), Order(11)]
         public void TestHeapsTrainingSample()
         {
@@ -111,6 +116,66 @@ namespace Tests
                 }
             }
             Assert.AreEqual(expectedCount, counter.Count);
+        }
+
+        [Test(Author = "Me", Description = "Test for BST algorithms"), Order(14)]
+        [TestCase(new int[] { 1, 4, 6, 10, 0, 0, 0, 7, 0, 8, 0, 0, 2, 5, 0, 0, 3, 9, 0, 0, 0 }, 9, 3)]
+        [TestCase(new int[] { 1, 2, 7, 8, 0, 0, 10, 0, 0, 0, 3, 4, 6, 0, 0, 0, 5, 9, 0, 0, 0 }, 9, 2)]
+        public void TestBinarySearchTreeSample(int[] sample, int desiredSum, int expectedAmount)
+        {
+            List<int>[] _;
+            var binarySearchTree = new BinarySearchTree(preOrderSource: sample);
+            Assert.AreEqual(expectedAmount, binarySearchTree.CountMonotonicSumms(desiredSum, out _));
+        }
+
+        [Test(Author = "Me", Description = "Test for BST algorithms"), Order(14)]
+        [TestCase(51,   0)] // Doublecheck required
+        [TestCase(78,   1)]
+        [TestCase(103,  2)]
+        [TestCase(50,   3)]
+        [TestCase(50,   4)] // Doublecheck required
+        [TestCase(9,    5)]
+        [TestCase(7,    6)]
+        [TestCase(9,    7)] // Doublecheck required
+        [TestCase(5,    8)]
+        [TestCase(5,    9)]
+        public void TestBinarySearchTreeZippedSamples(int desiredSum, int sampleIndex)
+        {
+            var samplesCollection = BstZippedSamplesCollection[sampleIndex];
+            List<int>[] result;
+            List<int>[] expectedResult = samplesCollection.Item2;
+            var binarySearchTree = new BinarySearchTree(preOrderSource: samplesCollection.Item1);
+            binarySearchTree.CountMonotonicSumms(desiredSum, out result);
+
+            var equality = result.SelectMany(a => a)
+                                    .OrderBy(v => v)
+                                    .SequenceEqual(expectedResult.SelectMany(a => a)
+                                                                .OrderBy(v => v));
+                
+            Assert.AreEqual(equality, true);
+        }
+
+        [Test(Author = "Me", Description = "Test for BST algorithms"), Order(14)]
+        [TestCase(490, new int[] { 2, 4, 7 }, new int[] { 992, 996, 999 })]
+        public void TestBinarySearchTreeBigSample(int rootValue, int[] first, int[] last)
+        {
+            var sample = LowLevelTcpClient.GetContent(endPoint: __bstBigSampleEndPoint)
+                                          .Split(new string[] { " ", }, StringSplitOptions.RemoveEmptyEntries)
+                                          .Select(value => int.Parse(value))
+                                          .ToArray();
+
+            var binarySearchTree = new BinarySearchTree(preOrderSource: sample);
+            Assert.AreEqual(rootValue, binarySearchTree.Root.Value);
+            
+            int[] leafs = binarySearchTree.Nodes
+                                          .Where(node => node.Value != 0 && node.Left.Value == 0 && node.Right.Value == 0)
+                                          .Select(node => node.Value)
+                                          .ToArray();
+            for (int i = 0; i < first.Length; i++)
+            {
+                Assert.AreEqual(first[i], leafs[i]);
+                Assert.AreEqual(last[last.Length - i - 1], leafs[leafs.Length - i - 1]);
+            }
         }
     }
 }

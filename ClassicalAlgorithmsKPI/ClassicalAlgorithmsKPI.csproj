@@ -81,6 +81,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -90,14 +91,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\Sorter.cs" />
+    <Compile Include="DataGenerators\BstData.cs" />
     <Compile Include="DataGenerators\HeapData.cs" />
     <Compile Include="DataGenerators\InversionsData.cs" />
     <Compile Include="DataGenerators\QuickSortingArrays.cs" />
+    <Compile Include="DataStructures\BinarySearchTree.cs" />
     <Compile Include="DataStructures\DoublyLinkedList.cs" />
     <Compile Include="DataStructures\DoublyLinkedNode.cs" />
     <Compile Include="DataStructures\HashTable.cs" />
     <Compile Include="DataStructures\Heap.cs" />
+    <Compile Include="DataStructures\TreeNode.cs" />
     <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Helpers\LowLevelTcpClient.cs" />
+    <Compile Include="Helpers\SequenceComparer.cs" />
     <Compile Include="Helpers\SQLiteClient.cs" />
     <Compile Include="Helpers\Structs.cs" />
     <Compile Include="Helpers\User.cs" />
