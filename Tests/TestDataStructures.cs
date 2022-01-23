@@ -19,7 +19,10 @@ namespace Tests
         private const string __bstZippedSamples = "https://courses.prometheus.org.ua/assets/courseware/v1/237ba9bb595be101117762d63e4e1614/c4x/KPI/Algorithms101/asset/data_examples_07.zip";
         private const string __bstBigSampleEndPoint = "assets/courseware/v1/2b7ac6054236d173fc556de9f817c494/c4x/KPI/Algorithms101/asset/input_1000a.txt";
 
+        private const string __strongComponentSamples = "https://courses.prometheus.org.ua/assets/courseware/v1/1678841e8becefb479cf7b6091e0b4a2/c4x/KPI/Algorithms101/asset/test_08.zip";
+
         public static Dictionary<int, (int[], List<int>[])> BstZippedSamplesCollection => new BstData(source: __bstZippedSamples).Collection;
+        public StrongConnectedGraphData StrongConnectedGraphData = new StrongConnectedGraphData(source: __strongComponentSamples);
 
         [Test(Author = "Me", Description = "Test for heaps algorithms"), Order(11)]
         public void TestHeapsTrainingSample()
@@ -152,6 +155,7 @@ namespace Tests
                                     .SequenceEqual(expectedResult.SelectMany(a => a)
                                                                 .OrderBy(v => v));
                 
+            Console.Write(1);
             Assert.AreEqual(equality, true);
         }
 
@@ -176,6 +180,21 @@ namespace Tests
                 Assert.AreEqual(first[i], leafs[i]);
                 Assert.AreEqual(last[last.Length - i - 1], leafs[leafs.Length - i - 1]);
             }
+        }
+
+        [Test(Author = "Me", Description = "Test for Graph algorithms"), Order(15)]
+        public void TestStrongConnectedComponents()
+        {
+            for (int testIndex = 0; testIndex < StrongConnectedGraphData.Samples.Length; testIndex++)
+            {
+                var sample = StrongConnectedGraphData.Samples[testIndex];
+                var expectedResult = StrongConnectedGraphData.ExpectedResult[testIndex];
+
+                Graph graph = new Graph(source: sample);
+                Assert.AreEqual(expectedResult, graph.CountStrongConnectedComponentsSize());
+            }
+            
+            Console.Write(1);
         }
     }
 }

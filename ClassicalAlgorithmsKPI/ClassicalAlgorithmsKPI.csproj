@@ -95,9 +95,12 @@
     <Compile Include="DataGenerators\HeapData.cs" />
     <Compile Include="DataGenerators\InversionsData.cs" />
     <Compile Include="DataGenerators\QuickSortingArrays.cs" />
+    <Compile Include="DataGenerators\StrongConnectedGraphData.cs" />
     <Compile Include="DataStructures\BinarySearchTree.cs" />
     <Compile Include="DataStructures\DoublyLinkedList.cs" />
     <Compile Include="DataStructures\DoublyLinkedNode.cs" />
+    <Compile Include="DataStructures\Graph.cs" />
+    <Compile Include="DataStructures\GraphNode.cs" />
     <Compile Include="DataStructures\HashTable.cs" />
     <Compile Include="DataStructures\Heap.cs" />
     <Compile Include="DataStructures\TreeNode.cs" />
@@ -121,6 +124,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="SamplesDB\StrongConnectedGraph.txt" />
     <Content Include="SamplesDB\TestDataDb.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
