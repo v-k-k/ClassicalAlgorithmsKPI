@@ -1,9 +1,6 @@
 ﻿using ClassicalAlgorithmsKPI.Helpers;
 using System.Linq;
 using System;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace ClassicalAlgorithmsKPI.DataGenerators
 {

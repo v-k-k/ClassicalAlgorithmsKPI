@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ClassicalAlgorithmsKPI.DataStructures
 {
@@ -13,7 +10,6 @@ namespace ClassicalAlgorithmsKPI.DataStructures
 
         public SortedSet<GraphNode> Nodes { get; } = new SortedSet<GraphNode>();
         public SortedSet<GraphNode> TransponedNodes { get; } = new SortedSet<GraphNode>();
-        public List<GraphNode> NodesInDfsOrder { get; } = new List<GraphNode>();
 
         public Graph(int[][] source)
         {
@@ -26,7 +22,7 @@ namespace ClassicalAlgorithmsKPI.DataStructures
                 int transponedNodeValue = pair[1];
                 int transponedSiblingNodeValue = pair[0];
 
-                if (Nodes.Any(item => item.Value == nodeValue))
+                if (Nodes.Contains(new GraphNode(nodeValue)))
                     node = Nodes.Where(item => item.Value == nodeValue).First();
                 else
                 {
@@ -34,7 +30,7 @@ namespace ClassicalAlgorithmsKPI.DataStructures
                     Nodes.Add(node);
                 }
 
-                if (Nodes.Any(item => item.Value == siblingNodeValue))
+                if (Nodes.Contains(new GraphNode(siblingNodeValue)))
                     siblingNode = Nodes.Where(item => item.Value == siblingNodeValue).First();
                 else
                 {
@@ -43,7 +39,7 @@ namespace ClassicalAlgorithmsKPI.DataStructures
                 }
                 node.Edges.Add(siblingNode);
 
-                if (TransponedNodes.Any(item => item.Value == transponedNodeValue))
+                if (TransponedNodes.Contains(new GraphNode(transponedNodeValue)))
                     transponedNode = TransponedNodes.Where(item => item.Value == transponedNodeValue).First();
                 else
                 {
@@ -51,7 +47,7 @@ namespace ClassicalAlgorithmsKPI.DataStructures
                     TransponedNodes.Add(transponedNode);
                 }
 
-                if (TransponedNodes.Any(item => item.Value == transponedSiblingNodeValue))
+                if (TransponedNodes.Contains(new GraphNode(transponedSiblingNodeValue)))
                     transponedSiblingNode = TransponedNodes.Where(item => item.Value == transponedSiblingNodeValue).First();
                 else
                 {

@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ClassicalAlgorithmsKPI.DataStructures
 {
     public class GraphNode : IComparable<GraphNode>
     {
+        private int __hashCode;
+
         public int Value;
         public int NumberInDfsOrder;
         public List<GraphNode> Edges = new List<GraphNode>();
@@ -16,6 +15,10 @@ namespace ClassicalAlgorithmsKPI.DataStructures
         public GraphNode(int value)
         {
             Value = value;
+            unchecked // Allow arithmetic overflow, numbers will just "wrap around"
+            {
+                __hashCode = value.GetHashCode();
+            }
         }
 
         public override bool Equals(object other)
@@ -26,12 +29,7 @@ namespace ClassicalAlgorithmsKPI.DataStructures
 
         public override int GetHashCode()
         {
-            unchecked // Allow arithmetic overflow, numbers will just "wrap around"
-            {
-                int hashcode = 1430287;
-                hashcode *= 7302013 ^ this.Value.GetHashCode();
-                return hashcode * 7302013 ^ this.Value.GetHashCode();
-            }
+            return __hashCode;
         }
 
         // Default comparer for GraphNode type.

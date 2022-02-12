@@ -61,11 +61,72 @@ namespace ClassicalAlgorithmsKPI.Helpers
             return res;
         }
 
+        public static T[][] SkipIfContains<T>(this T[][] source, T[] ignoreValues)
+        {
+            HashSet<T> uniqueIgnore = new HashSet<T>(ignoreValues);
+            List<int> indexes = new List<int>(); 
+            for (int i = 0; i < source.Length; i++)
+            {
+                if (new HashSet<T>(source[i]).SetEquals(uniqueIgnore))
+                    indexes.Add(i);
+            }
+
+            // Return new array.
+            T[][] res = new T[source.Length - indexes.Count][];
+            int checkIdx = 0;
+            int sourceIdx = 0;
+            for (int i = 0; i < res.Length; i++)
+            {
+                checkIdx = i;
+                while (indexes.Contains(checkIdx))
+                {
+                    sourceIdx++;
+                    checkIdx++;
+                }
+                res[i] = source[sourceIdx];
+                sourceIdx++;
+            }
+            
+            return res;
+        }
+
         public static T[] Append<T>(this T[] source, T item)
         {
             Array.Resize(ref source, source.Length + 1);
             source[source.Length - 1] = item;
             return source;
+        }
+
+        public static TSource MinBy<TSource>(
+            this IEnumerable<TSource> source, Func<TSource, IComparable> projectionToComparable)
+        {
+            using (var e = source.GetEnumerator())
+            {
+                if (!e.MoveNext())
+                {
+                    throw new InvalidOperationException("Sequence is empty.");
+                }
+                TSource min = e.Current;
+                IComparable minProjection = projectionToComparable(e.Current);
+                while (e.MoveNext())
+                {
+                    IComparable currentProjection = projectionToComparable(e.Current);
+                    if (currentProjection.CompareTo(minProjection) < 0)
+                    {
+                        min = e.Current;
+                        minProjection = currentProjection;
+                    }
+                }
+                return min;
+            }
+        }
+
+        public static IList<T> Swap<T>(this IList<T> list, int indexA, int indexB)
+        {
+            T tmp = list[indexA];
+            list[indexA] = list[indexB];
+            list[indexB] = tmp;
+            return list;
         }
     }
 }

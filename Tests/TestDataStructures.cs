@@ -5,6 +5,8 @@ using NUnit.Framework;
 using System.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 namespace Tests
 {
@@ -20,9 +22,20 @@ namespace Tests
         private const string __bstBigSampleEndPoint = "assets/courseware/v1/2b7ac6054236d173fc556de9f817c494/c4x/KPI/Algorithms101/asset/input_1000a.txt";
 
         private const string __strongComponentSamples = "https://courses.prometheus.org.ua/assets/courseware/v1/1678841e8becefb479cf7b6091e0b4a2/c4x/KPI/Algorithms101/asset/test_08.zip";
+        private readonly string __strongComponentSamplesBigFilePath = Path.GetFullPath(
+            Path.Combine(
+                Path.GetFullPath(Assembly.GetExecutingAssembly().Location),
+                @"..\..\..\..\ClassicalAlgorithmsKPI\SamplesDB\StrongConnectedGraph.txt"));
 
-        public static Dictionary<int, (int[], List<int>[])> BstZippedSamplesCollection => new BstData(source: __bstZippedSamples).Collection;
-        public StrongConnectedGraphData StrongConnectedGraphData = new StrongConnectedGraphData(source: __strongComponentSamples);
+        private const string __shortestPathSamples = "https://courses.prometheus.org.ua/assets/courseware/v1/e1012c12dc4d6b5eca03921719e85fd6/c4x/KPI/Algorithms101/asset/test_09.zip";
+        private readonly string __dijkstraChallengeSampleBigFilePath = Path.GetFullPath(
+            Path.Combine(
+                Path.GetFullPath(Assembly.GetExecutingAssembly().Location),
+                @"..\..\..\..\ClassicalAlgorithmsKPI\SamplesDB\FLA_Dijkstra_challenge.txt"));
+
+        public static Dictionary<int, (int[], List<int>[])> BstZippedSamplesCollection => null;// new BstData(source: __bstZippedSamples).Collection;
+        public StrongConnectedGraphData StrongConnectedGraphData = null;// new StrongConnectedGraphData(source: __strongComponentSamples);
+        public GraphWithWeightsData GraphWithWeights = new GraphWithWeightsData(__shortestPathSamples);
 
         [Test(Author = "Me", Description = "Test for heaps algorithms"), Order(11)]
         public void TestHeapsTrainingSample()
@@ -193,8 +206,69 @@ namespace Tests
                 Graph graph = new Graph(source: sample);
                 Assert.AreEqual(expectedResult, graph.CountStrongConnectedComponentsSize());
             }
-            
-            Console.Write(1);
+        }
+
+        [Test(Author = "Me", Description = "Test for Graph algorithms"), Order(16)]
+        [TestCase(new int[] { 434821, 968, 459, 313, 211 })]
+        public void TestStrongConnectedComponentsBigSample(int[] expectedResult)
+        {
+            int[][] data = File.ReadAllText(__strongComponentSamplesBigFilePath)
+                               .Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries)
+                               .Select(item => item.Split(new string[] { " ", }, StringSplitOptions.RemoveEmptyEntries)
+                                                   .Select(s => int.Parse(s))
+                                                   .ToArray())
+                               .ToArray();
+
+            FastGraph graph = new FastGraph(source: data);
+            int[] lastStrongConnectedComponentsSize = graph.CountStrongConnectedComponentsSize();
+            for (int testIndex = 0; testIndex < expectedResult.Length; testIndex++)
+            {
+                Assert.AreEqual(expectedResult[testIndex], lastStrongConnectedComponentsSize[testIndex]);
+            }
+        }
+
+        [Test(Author = "Me", Description = "Test for Graph algorithms"), Order(17)]
+        public void TestShortestPathSamples()
+        {
+            for (int testIndex = 0; testIndex < GraphWithWeights.Samples.Count; testIndex++)
+            {
+                var sample = GraphWithWeights.Samples[testIndex];
+                var martixSize = GraphWithWeights.VertexesAmount[testIndex];
+                var expectedPathMatrix = GraphWithWeights.ExpectedResult[testIndex]
+                                                         .SkipIfContains(new int[] { 0, int.MinValue });
+
+                FastGraph graph = new FastGraph(source: sample, weights: true);
+                var calculatedPathMatrix = graph.ShortestPathMatrix(matrixSize: martixSize)
+                                                .SkipIfContains(new int[] { 0, int.MinValue });
+
+                bool equality = expectedPathMatrix.SelectMany(a => a)
+                                                  .OrderBy(v => v)
+                                                  .SequenceEqual(calculatedPathMatrix.SelectMany(a => a)
+                                                  .OrderBy(v => v));
+
+                Assert.AreEqual(equality, true);
+            }
+        }
+
+        [Test(Author = "Me", Description = "Test for Graph algorithms"), Order(18)]
+        [TestCase(1070376, 100562, 1070345, 6699685, 4)]
+        public void TestShortestPathBigSample(
+            int vertexAmount, int startPoint, int endPoint, int expectedDistance, int expectedUniquePaths)
+        {
+            int[][] data = File.ReadAllText(__dijkstraChallengeSampleBigFilePath)
+                               .Split(new string[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries)
+                               .Select(item => item.Split(new string[] { " ", }, StringSplitOptions.RemoveEmptyEntries)
+                                                   .Select(s => int.Parse(s))
+                                                   .ToArray())
+                               .Skip(1)
+                               .ToArray();
+
+            FastGraph graph = new FastGraph(source: data, weights: true);
+            Dictionary<int, int> counter;
+            var result = graph.OptimizedDijkstra(out counter, start: startPoint, correctionAmount: vertexAmount, stopOn: endPoint);
+
+            Assert.AreEqual(expectedDistance, result[endPoint - 1]);
+            Assert.AreEqual(expectedUniquePaths, counter[endPoint - 1]);
         }
     }
 }
